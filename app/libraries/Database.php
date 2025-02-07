@@ -1,45 +1,35 @@
 <?php
-/*
-*PDO DATABASE CLASS 
-*connect to database 
-*create prepared statments
-*bind values
-return rows and results
-*/
+
 class Database
 {
     private $host = DB_HOST;
-    private $user = DB_USER;
-    private $pass = DB_PASS;
+    private $username = DB_USER;
+    private $password = DB_PASS;
     private $dbname = DB_NAME;
-    private $dbh;
 
+    private $dbh;
     private $stmt;
     private $error;
+
     public function __construct()
     {
         $dsn = 'pgsql:host=' . $this->host . ';dbname=' . $this->dbname;
-        $options = array(
-            PDO::ATTR_PERSISTENT => true,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        );
 
         try {
-            $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
-            echo "3la slamtak";
+            $this->dbh = new PDO($dsn, $this->username, $this->password);
+            echo '3la slamtak';
         } catch (PDOException $e) {
             $this->error = $e->getMessage();
-            echo "An error occurred while connecting to the database." . $e->getMessage();
+            echo $this->error;
         }
     }
 
-    // prepare statment
     public function query($sql)
     {
-        $this->stmt =  $this->dbh->prepare($sql);
+        $this->stmt = $this->dbh->prepare($sql);
     }
-    // bind values 
-    public function bind($param, $value, $type = null)
+
+    public function bindparam($param, $value, $type = null)
     {
         if (is_null($type)) {
             switch (true) {
@@ -52,20 +42,54 @@ class Database
                 case is_null($value):
                     $type = PDO::PARAM_NULL;
                     break;
-                default:
+                case is_string($value):
                     $type = PDO::PARAM_STR;
+                    break;
             }
         }
         $this->stmt->bindValue($param, $value, $type);
     }
-    // excute the prepared statment 
-    public function excute()
+    //execute statement
+    public function execute()
     {
-        return $this->stmt->excute();
+        return $this->stmt->execute();
     }
-    // get resuls set as array of the objects 
-    public function resultSet()
+
+    public function rollback()
     {
-        $this->excute();
+        return $this->dbh->rollBack();
+    }
+
+    // get array of data the data is objects btw ;
+    public function resultset()
+    {
+        $this->execute();
+        return $this->stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+    // get single record of data
+    public function single()
+    {
+        $this->execute();
+        return $this->stmt->fetch(PDO::FETCH_OBJ);
+    }
+
+    public function beginTrans()
+    {
+        return $this->dbh->beginTransaction();
+    }
+
+    public function commit()
+    {
+        return $this->dbh->commit();
+    }
+
+    public function lastid()
+    {
+        return $this->dbh->lastInsertId();
+    }
+
+    public function rowCount()
+    {
+        return $this->stmt->rowCount();
     }
 }

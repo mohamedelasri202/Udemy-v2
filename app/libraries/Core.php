@@ -1,43 +1,47 @@
 <?php
+// create rooting configuration
 
 class Core
 {
     protected $currentController = 'Pages';
-    protected $currentMethod = 'index   ';
+    protected $currentMethode = 'index';
     protected $params = [];
 
-    public function __construct()
+    function __construct()
     {
         $url = $this->getUrl();
-
-        // Check for controller
-        if (isset($url[0]) && file_exists('../app/controllers/' . ucwords($url[0]) . '.php')) {
+        //check if controller exist with this url
+        if (!empty($url) && file_exists('../app/controllers/' . ucwords($url[0]) . '.php')) {
             $this->currentController = ucwords($url[0]);
-            unset($url[0]); // Remove the controller from the URL
+            unset($url[0]);
         }
 
+        // Require class page
         require_once '../app/controllers/' . $this->currentController . '.php';
+
+        // Create instance from controller class
         $this->currentController = new $this->currentController;
 
-        // Check for method
-        if (isset($url[1]) && method_exists($this->currentController, $url[1])) {
-            $this->currentMethod = $url[1];
-            unset($url[1]); // Remove the method from the URL
+        // Check for the second URL part (methods)
+        if (!empty($url[1])) {
+            if (method_exists($this->currentController, $url[1])) {
+                $this->currentMethode = $url[1];
+                unset($url[1]);
+            }
         }
 
-        // Re-index the remaining parameters
-        $this->params = $url ? array_values($url) : [];
+        // get this method params
+        $this->params = !empty($url) ? array_values($url) : [];
 
-        // Call the method with parameters
-        call_user_func_array([$this->currentController, $this->currentMethod], $this->params);
+        call_user_func_array([$this->currentController, $this->currentMethode], $this->params);
     }
-
-    public function getUrl()
+    public function getUrl(): array
     {
         if (isset($_GET['url'])) {
-            $url = rtrim($_GET['url'], '/');
+            $url = rtrim($_GET['url'], "/");
             $url = filter_var($url, FILTER_SANITIZE_URL);
-            return explode('/', $url);
+            return explode("/", $url);
         }
+        return [];
     }
 }

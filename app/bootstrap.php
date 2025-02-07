@@ -1,10 +1,12 @@
 <?php
-// load config
-
+session_start();
 // load config
 require_once 'config/config.php';
 
-// AUTOLOAD CORE LIBRARIES 
+//load helper
+require_once '../app/helpers/url_helper.php';
+
+//Autoload Libraries
 spl_autoload_register(function ($className) {
     require_once 'libraries/' . $className . '.php';
 });

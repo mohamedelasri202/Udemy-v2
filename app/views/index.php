@@ -1,8 +1,3 @@
-<?php
-require APPROOT . '/views/inc/header.php';
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,14 +22,24 @@ require APPROOT . '/views/inc/header.php';
                     <a href="#" class="text-gray-700 hover:text-blue-600">Courses</a>
                     <a href="#" class="text-gray-700 hover:text-blue-600">Categories</a>
                     <a href="#" class="text-gray-700 hover:text-blue-600">Instructors</a>
-                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                        Get Started
-                    </button>
+                    <div class="space-x-4">
+                        <a href="<?php echo URLROOT . '/Pages/login'; ?>" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"> Login </a>
+
+
+                        <a href="<?php echo URLROOT . '/Pages/regester'; ?>" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"> Sign Up </a>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
+    <ul>
+        <?php
+        foreach ($data['posts'] as $posts) {
+            echo "<ul>" . $posts->title . "</ul>";
+        }
+        ?>
+    </ul>
     <!-- Hero Section -->
     <div class="relative bg-blue-600 h-[600px]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
